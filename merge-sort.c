@@ -1,83 +1,82 @@
-// cl /W4 /EHsc merge-sort.c /Fo.\output\ /Fe.\output\ /link && .\output\merge-sort.exe
+// cl /Wall /WX /wd5045 /analyze /EHsc /TC /Zc:preprocessor merge-sort.c /Fo.\output\ /Fe.\output\ /link && .\output\merge-sort.exe
 
 #include <stdlib.h>
 #include <stdio.h>
 
+void _mergeSort(int* array, const size_t low, const size_t high) {
 
-void merge(int array[], int p, int q, int r);
-
-void mergeSort(int array[], int p, int r) {
-
-    if (p < r) {
-
-        int q = (p + r) / 2;
-
-        mergeSort(array, p, q);
-        mergeSort(array, q + 1, r);
-        merge(array, p, q, r);
-    }
-};
-
-// we can avoid allocating inside a hot loop with static arrays of size N
-// which get cleared
-void merge(int array[], int p, int q, int r) {
-
-    int lowLength = q - p + 1;
-    int highLength = r - q;
-
-    int* lowHalf = malloc(sizeof(int) * lowLength);
-    int* highHalf = malloc(sizeof(int) * highLength);
-
-    int i = 0, j = 0, k = p;
-
-    for (; k <= q; i++, k++) {
-        lowHalf[i] = array[k];
+    if (high <= low) {
+        return;
     }
 
-    for (; k <= r; j++, k++) {
-        highHalf[j] = array[k];
+    size_t mid = (low + high) / 2;
+
+    _mergeSort(array, low, mid);
+    _mergeSort(array, mid + 1, high);
+
+    int* sorted = (int*)calloc(
+        (mid - low + 1)     // lower length
+        + (high - mid)      // higher length
+        , sizeof(int));
+    
+    if (NULL == sorted) {
+        return; // TODO jmp? sig handler?
     }
 
-    i = 0;
-    j = 0;
-    k = p;
+    // considering lengths above
+    // and low and mid + 1 here
+    // I wonder how many popular merge sorts out there have
+    // out of bounds access issues
+    // I think the Khan Academy implementation has an OOB re: leetcode two-sum
+    size_t i = low, j = mid + 1, k = 0;
 
-    while (i < lowLength && j < highLength) {
+    while (i <= mid && j <= high) {
 
-        if (lowHalf[i] <= highHalf[j]) {
-            array[k] = lowHalf[i];
+        if (array[i] <= array[j]) {
+            sorted[k] = array[i];
             i++;
         } else {
-            array[k] = highHalf[j];
+            sorted[k] = array[j];
             j++;
         }
 
         k++;
     }
 
-    while (i < lowLength) {
-        array[k] = lowHalf[i];
+    while (i <= mid) {
+        sorted[k] = array[i];
         i++;
         k++;
     }
 
-    while (j < highLength) {
-        array[k] = highHalf[j];
+    while (j <= high) {
+        sorted[k] = array[j];
         j++;
         k++;
     }
 
-    free(lowHalf);
-    free(highHalf);
+    for (i = 0, k = low; k <= high; ++i, ++k) {
+        array[k] = sorted[i];
+    }
+
+    free(sorted);
 };
 
-void main() {
+// we can avoid allocating inside a hot loop with static arrays of size N
+// which get cleared
+// aka initialize our version of the "C runtime" in a biggger app
+void mergeSort(int* array, size_t size) {
+
+    _mergeSort(array, 0, size - 1);
+};
+
+void main(void) {
 
     int array[] = { 3, 7, 12, 14, 2, 6, 9, 11 };
     printf("array: ");
     for (int i = 0; i < (sizeof array / sizeof *array); i++) { printf("%d, ", array[i]); }
     printf("\n");
-    mergeSort(array, 0, (sizeof array / sizeof *array) - 1);
+    mergeSort(array, (sizeof array / sizeof *array));
     printf("sorted: ");
     for (int i = 0; i < (sizeof array / sizeof *array); i++) { printf("%d, ", array[i]); }
     printf("\n");
@@ -86,7 +85,7 @@ void main() {
     printf("array: ");
     for (int i = 0; i < (sizeof array2 / sizeof *array2); i++) { printf("%d, ", array2[i]); }
     printf("\n");
-    mergeSort(array2, 0, (sizeof array2 / sizeof *array2) - 1);
+    mergeSort(array2, (sizeof array2 / sizeof *array2));
     printf("sorted: ");
     for (int i = 0; i < (sizeof array2 / sizeof *array2); i++) { printf("%d, ", array2[i]); }
     printf("\n");

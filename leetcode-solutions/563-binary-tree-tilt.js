@@ -6,14 +6,11 @@
  *     this.right = (right===undefined ? null : right)
  * }
  */
-
 /**
  * @param {TreeNode} root
  * @return {number}
  */
-
-function findTilt(root) {
-
+var findTilt = function (root) {
     let tilt = 0;
 
     function findDiffDFS(node) {
@@ -33,4 +30,4 @@ function findTilt(root) {
     findDiffDFS(root);
 
     return tilt;
-}
+};

@@ -1,4 +1,4 @@
-// cl /W4 /EHsc merge-sort.cpp /Fo.\output\ /Fe.\output\ /link && .\output\merge-sort.exe
+// cl /W4 /EHsc /TP /Zc:preprocessor merge-sort.cpp /Fo.\output\ /Fe.\output\ /link && .\output\merge-sort.exe
 
 #include <functional>
 #include <iostream>
