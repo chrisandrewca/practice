@@ -13,6 +13,10 @@ void _mergeSort(int* array, const size_t low, const size_t high) {
         (mid - low + 1)     // lower length
         + (high - mid)      // higher length
         , sizeof(int));
+    
+    if (NULL == sorted) {
+        return;
+    }
 
     size_t i = low, j = mid + 1, k = 0;
 
@@ -92,11 +96,18 @@ int* findTwoSum(int* nums, int numsSize, int target, int *returnSize, int i) {
     int remainder = target - nums[i];
     size_t remainderIndex = 0;
     bool remainderFound = binarySearch(nums, numsSize, remainder, &remainderIndex);
-    if (remainderFound == true) {
+    
+    printf("t: %d, i: %d, nums[i]: %d, rem: %d, rf: %d, ri: %zu\n",
+          target, i, nums[i], remainder, remainderFound, remainderIndex);
+    for (int n = 0; n < numsSize; n++) {
+        printf("n: %d, nums[n]: %d\n", n, nums[n]);
+    }
+    printf("\n");
+    if (remainderFound == true && ((int)remainderIndex) != i) {
         *returnSize = 2;
         int* twoSumArray = (int*)calloc(*returnSize, sizeof(int));
-        twoSumArray[0] = (int)remainderIndex;
-        twoSumArray[1] = i;
+        twoSumArray[0] = i;
+        twoSumArray[1] = (int)remainderIndex;
         return twoSumArray;
     }
     
@@ -111,3 +122,5 @@ int* twoSum(int* nums, int numsSize, int target, int* returnSize){
     mergeSort(nums, numsSize);
     return findTwoSum(nums, numsSize, target, returnSize, 0);
 };
+
+// doesnt work because I sorted the input, need key based memoization
