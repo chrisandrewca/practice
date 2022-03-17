@@ -10,24 +10,25 @@ bool binarySearch(
     size_t elementSize,
     void* value,
     int (*valueLessThanGreaterOrEqualToElement)(void*, void*),
-    size_t* foundIndex) {
+    size_t* valueIndex) {
 
     size_t min = 0;
     size_t max = arraySize - 1;
     size_t i = 0;
 
     char* basePtr = (char*)array;
+    char* elementPtr = NULL;
 
     while (min <= max) {
-        
+
         i = (min + max) / 2;
 
-        char* elementPtr = basePtr + (i * elementSize);
+        elementPtr = basePtr + (i * elementSize);
 
         int order = valueLessThanGreaterOrEqualToElement(value, (void*)elementPtr);
 
         if (order < 0) {
-            
+
             if (i == 0) {
                 return false;
             }
@@ -37,28 +38,28 @@ bool binarySearch(
 
             min = i + 1;
         } else {
-            
-            *foundIndex = i;
+
+            *valueIndex = i;
             return true;
         }
     }
-    
+
     return false;
 };
 
-int compareIntValueWithElement(void* _value, void* _element) {
+int bsCompareIntValue(void* valuePtr, void* elementPtr) {
 
-    int value = *(int*)_value;
-    int element = *(int*)_element;
+    int value = *((int*)valuePtr);
+    int element = *((int*)elementPtr);
 
     if (value < element) {
         return -1;
     } else if (value > element) {
         return 1;
-    } else {
-        return 0;
     }
-};
+
+    return 0;
+}
 
 void main(void) {
 
@@ -77,7 +78,7 @@ void main(void) {
         PRIMES_SIZE,
         sizeof(int),
         (void*)&searchValue,
-        &compareIntValueWithElement,
+        &bsCompareIntValue,
         &index);
 
     printf("value: %d, found: %d, index: %zd\n", searchValue, found, index);
@@ -90,7 +91,7 @@ void main(void) {
         PRIMES_SIZE,
         sizeof(int),
         (void*)&searchValue,
-        &compareIntValueWithElement,
+        &bsCompareIntValue,
         &index);
 
     printf("value: %d, found: %d, index: %zd\n", searchValue, found, index);
@@ -103,7 +104,7 @@ void main(void) {
         PRIMES_SIZE,
         sizeof(int),
         (void*)&searchValue,
-        &compareIntValueWithElement,
+        &bsCompareIntValue,
         &index);
 
     printf("value: %d, found: %d, index: %zd\n", searchValue, found, index);
