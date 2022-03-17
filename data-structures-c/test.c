@@ -1,4 +1,4 @@
-// cl /Wall /WX /wd5045 /analyze /EHsc /TC /Zc:preprocessor binary-search.c /Fo.\output\ /Fe.\output\ /link && .\output\binary-search.exe
+// cl /Wall /WX /wd5045 /analyze /EHsc /TC /Zc:preprocessor test.c /Fo..\output\ /Fe..\output\ /link && ..\output\test.exe
 
 #include <stdbool.h>
 #include <stdio.h>
