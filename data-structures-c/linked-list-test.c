@@ -1,66 +1,22 @@
-/*
-cl /Wall /WX ^
-    /wd5045 /wd4820 ^
-    /analyze /EHsc /TC /Zc:preprocessor ^
-    /I.\ ^
-    /I..\ ^
-    linked-list-test.c ^
-    /Fo..\output\ /Fe..\output\ /link && ..\output\linked-list-test.exe
-*/
-
-#include "cclib.h"
-#include "linked-list.h"
+#include <errno.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-struct user {
-    int id;
-    char* name;
-};
+void onExit() {
 
-void freeLinkedListNodeOfUser(struct linkedListNode* node) {
+    printf("Printing strerror...\n");
 
-    struct user* user = (struct user*)node->value;
+    char buf[256] = { "\0" };
+    errno_t strErrorCode = strerror_s(buf, 256, errno);
 
-    free(user->name);
-};
+    printf("%u?, %u?, %s\n", errno, strErrorCode, buf);
 
-void onExit(void) {
-    errno_t errnum = captureStrError();
-    printf("Error: %d, %s\n", errnum, strErrorBuf);
+    // Exit
 };
 
 void main(void) {
+    atExit(onExit);
 
-    setOnExit(onExit);
-
-    struct linkedList* list = NULL;
-    callocOf(1, struct linkedList, &list);
-    printf("listPtr: %p\n", list);
-
-    struct user* user = NULL;
-    callocOf(1, struct user, &user);
-
-    user->id = 23;
-    callocOf(30, char, &user->name);
-    strncpy_s(user->name, 30, "Christopher", 11);
-
-    struct linkedListNode* node
-        = linkedListNode(list, (void*)user, sizeof(struct user));
-
-    user = (struct user*)node->value;
-    printf("id: %d, name: %s\n", user->id, user->name);
-
-    node = list->head;
-    do {
-
-        user = (struct user*)node->value;
-        printf("id: %d, name: %s\n", user->id, user->name);
-
-        node = node->next;
-
-    } while(node != list->head);
-
-    freeLinkedList(list, freeLinkedListNodeOfUser);
-
-    printf("Finished.\n");
+    //EXIT?
 };
